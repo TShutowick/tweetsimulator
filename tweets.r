@@ -5,7 +5,7 @@ setup_twitter_oauth(YOUR_CREDENTIALS_HERE)
 
 getTweets<-function(user, n=1000)
   {
-  #userTimeline returns a list of "environment" objects
+  #userTimeline returns a list of environments
   #convert each one to a data frame and keep only the first cell
   #now it's a list of tweet character vectors
   
@@ -15,7 +15,7 @@ getTweets<-function(user, n=1000)
   #split vectors by words
   tweets<-sapply(tweets,function(x) strsplit(x," "))
   
-  #signify the end of a tweet
+  #Adding "ENDTWEET" to the end of each tweet lets the tweetgen function know when to stop
   tweets<-sapply(1:length(tweets),function(x) c(tweets[[x]],"ENDTWEET"))
 
   #collapse list of tweets into single character vector
@@ -24,11 +24,11 @@ getTweets<-function(user, n=1000)
   #before removing punctuation, separate links so you dont end up with a bunch of messed up urls as words
   links<<-words[grep("http",words,ignore.case=T)]
   
-  #links will be added at random later#
+  #tweetgen will replace links at random
   words[grep("http",words,ignore.case=T)]<-"ITSALINK"
   
-  #get rid of punctuation so gsub works properly#
-  #same idea with links. These punctuation marks will be added back in randomly#
+  #get rid of punctuation so gsub works properly
+  #tweetgen will replace them
   words<-gsub("! "," EXPNT ",words)
   words<-gsub("\\.","FULSTOP",words)
   words<-gsub(", "," COMMA ",words)
@@ -45,7 +45,7 @@ getTweets<-function(user, n=1000)
   #locations of unique words in words vector
   locs<-sapply(uniqueWords, function(x) grep(x,words,ignore.case = T))
   
-  #for each occurence of each word, returns the word occuring after
+  #for each occurence of each unique word, get the next word
   nextwords<-sapply(locs, function(x) words[x+1])
   
   #move the unique words and next words vectors to the environment
@@ -98,17 +98,18 @@ tweetgen<-function()
 
 
   
-  #short tweets are boring, must be under 140 characters
+  #short tweets are boring, and tweets must be under 140 characters
   if (nchar(tweetout)>140 || nchar(tweetout)<50)
     return(0)
   tweetout
   
 }
+                    
 
-#run this. It keeps trying until an acceptable tweet is created. 
 finaltweet<-function()
 {
   tweetout<-0
+  #Keep running tweetgen until it works
   while(tweetout==0)
   {
     tweetout<-tweetgen()
