@@ -1,6 +1,9 @@
 require(twitteR)
 setup_twitter_oauth(YOUR_CREDENTIALS_HERE)
 
+#1. setup your twitter
+#2. run getTweets for desired user. Usually takes a minute.
+#3. run finaltweet. Usually takes a second.
 
 
 getTweets<-function(user, n=1000)
